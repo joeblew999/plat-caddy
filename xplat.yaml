@@ -1,0 +1,43 @@
+# plat-caddy: Custom Caddy build with common modules
+#
+# Core infrastructure package - required by other plat-* systems
+
+name: plat-caddy
+version: 0.1.0
+description: Custom Caddy build with Cloudflare DNS, security, and cache modules
+author: joeblew999
+license: MIT
+
+# Binary installation
+binary:
+  name: caddy
+  source:
+    go: github.com/joeblew999/plat-caddy/cmd/caddy@latest
+
+# Taskfile for development commands
+taskfile:
+  path: Taskfile.yml
+
+# Process configuration for process-compose
+processes:
+  caddy:
+    command: caddy run --config Caddyfile
+    description: Caddy reverse proxy and web server
+    port: 443
+
+# Environment variables
+env:
+  optional:
+    - name: CLOUDFLARE_API_TOKEN
+      description: Cloudflare API token for DNS challenge
+    - name: CADDY_ADMIN
+      description: Caddy admin API address
+      default: "localhost:2019"
+
+# Dependencies
+dependencies:
+  build:
+    - go>=1.23
+
+# Core package marker - indicates this is required infrastructure
+core: true

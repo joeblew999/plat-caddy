@@ -1,0 +1,70 @@
+# plat-caddy Taskfile
+#
+# Run 'task' to see available commands
+# Run 'task <command>' to execute
+
+version: "3"
+
+vars:
+  BINARY: caddy
+  MAIN: ./cmd/caddy
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  build:
+    desc: Build the Caddy binary
+    cmds:
+      - go build -o {{.BINARY}} {{.MAIN}}
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  lint:
+    desc: Run linter
+    cmds:
+      - golangci-lint run || echo "golangci-lint not installed, skipping"
+
+  run:
+    desc: Run Caddy with Caddyfile
+    deps: [build]
+    cmds:
+      - ./{{.BINARY}} run --config Caddyfile
+
+  reload:
+    desc: Reload Caddy config
+    cmds:
+      - ./{{.BINARY}} reload --config Caddyfile
+
+  validate:
+    desc: Validate Caddyfile
+    deps: [build]
+    cmds:
+      - ./{{.BINARY}} validate --config Caddyfile
+
+  fmt:
+    desc: Format Caddyfile
+    deps: [build]
+    cmds:
+      - ./{{.BINARY}} fmt --overwrite Caddyfile
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -f {{.BINARY}}
+
+  install:
+    desc: Install to GOBIN
+    cmds:
+      - go install {{.MAIN}}
+
+  version:
+    desc: Show Caddy version
+    deps: [build]
+    cmds:
+      - ./{{.BINARY}} version

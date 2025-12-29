@@ -1,0 +1,30 @@
+# Default Caddyfile
+#
+# This is a simple reverse proxy configuration.
+# Customize for your needs.
+
+{
+    # Global options
+    admin localhost:2019
+
+    # Uncomment for Cloudflare DNS challenge (wildcard certs)
+    # acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+# Example: Reverse proxy to local services
+#
+# example.com {
+#     reverse_proxy localhost:8080
+# }
+
+# Example: Static file server
+#
+# static.example.com {
+#     root * /var/www/static
+#     file_server
+# }
+
+# Development placeholder
+:8080 {
+    respond "plat-caddy is running"
+}

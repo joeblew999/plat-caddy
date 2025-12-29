@@ -1,0 +1,22 @@
+# Built binary (root level only)
+/caddy
+
+# Caddy data
+caddy_data/
+.caddy/
+
+# Environment files
+.env
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
