@@ -6,16 +6,14 @@
 # Uses xplat directory convention:
 #   PLAT_BIN  → .bin/   (built binaries)
 #   PLAT_DATA → .data/  (runtime data)
+#
+# Pattern: All plat-* taskfiles use TOOLNAME_CMD for full binary path
 
 version: "3"
 
 vars:
-  # === Required by xplat archetype system ===
-  CADDY_BIN: 'caddy{{exeExt}}'
-  CADDY_VERSION: 'v2.8.4'
-  CADDY_REPO: 'github.com/joeblew999/plat-caddy'
-
-  # Source
+  # Binary (with {{exeExt}} for Windows)
+  CADDY_BINARY: 'caddy{{exeExt}}'
   CADDY_MAIN: ./cmd/caddy
 
   # Directories - use PLAT_* from xplat, fallback for standalone task
@@ -23,7 +21,7 @@ vars:
   CADDY_DATA_DIR: '{{.PLAT_DATA | default ".data"}}'
 
   # Full binary path
-  CADDY_CMD: '{{.CADDY_BIN_DIR}}/{{.CADDY_BIN}}'
+  CADDY_CMD: '{{.CADDY_BIN_DIR}}/{{.CADDY_BINARY}}'
 
 tasks:
   default:
