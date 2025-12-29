@@ -1,13 +1,29 @@
 # plat-caddy Taskfile
 #
-# Run 'task' to see available commands
-# Run 'task <command>' to execute
+# Run 'xplat task' to see available commands
+# Run 'xplat task <command>' to execute
+#
+# Uses xplat directory convention:
+#   PLAT_BIN  → .bin/   (built binaries)
+#   PLAT_DATA → .data/  (runtime data)
 
 version: "3"
 
 vars:
-  BINARY: caddy
-  MAIN: ./cmd/caddy
+  # === Required by xplat archetype system ===
+  CADDY_BIN: 'caddy{{exeExt}}'
+  CADDY_VERSION: 'v2.8.4'
+  CADDY_REPO: 'github.com/joeblew999/plat-caddy'
+
+  # Source
+  CADDY_MAIN: ./cmd/caddy
+
+  # Directories - use PLAT_* from xplat, fallback for standalone task
+  CADDY_BIN_DIR: '{{.PLAT_BIN | default ".bin"}}'
+  CADDY_DATA_DIR: '{{.PLAT_DATA | default ".data"}}'
+
+  # Full binary path
+  CADDY_CMD: '{{.CADDY_BIN_DIR}}/{{.CADDY_BIN}}'
 
 tasks:
   default:
@@ -15,10 +31,18 @@ tasks:
     cmds:
       - task --list
 
+  check:deps:
+    desc: Ensure caddy binary exists
+    status:
+      - test -f "{{.CADDY_CMD}}"
+    cmds:
+      - task: build
+
   build:
     desc: Build the Caddy binary
     cmds:
-      - go build -o {{.BINARY}} {{.MAIN}}
+      - mkdir -p "{{.CADDY_BIN_DIR}}"
+      - go build -o "{{.CADDY_CMD}}" {{.CADDY_MAIN}}
 
   test:
     desc: Run tests
@@ -32,39 +56,40 @@ tasks:
 
   run:
     desc: Run Caddy with Caddyfile
-    deps: [build]
+    deps: [check:deps]
     cmds:
-      - ./{{.BINARY}} run --config Caddyfile
+      - '"{{.CADDY_CMD}}" run --config Caddyfile'
 
   reload:
     desc: Reload Caddy config
+    deps: [check:deps]
     cmds:
-      - ./{{.BINARY}} reload --config Caddyfile
+      - '"{{.CADDY_CMD}}" reload --config Caddyfile'
 
   validate:
     desc: Validate Caddyfile
-    deps: [build]
+    deps: [check:deps]
     cmds:
-      - ./{{.BINARY}} validate --config Caddyfile
+      - '"{{.CADDY_CMD}}" validate --config Caddyfile'
 
   fmt:
     desc: Format Caddyfile
-    deps: [build]
+    deps: [check:deps]
     cmds:
-      - ./{{.BINARY}} fmt --overwrite Caddyfile
+      - '"{{.CADDY_CMD}}" fmt --overwrite Caddyfile'
 
   clean:
     desc: Clean build artifacts
     cmds:
-      - rm -f {{.BINARY}}
+      - rm -rf "{{.CADDY_BIN_DIR}}"
 
   install:
     desc: Install to GOBIN
     cmds:
-      - go install {{.MAIN}}
+      - go install {{.CADDY_MAIN}}
 
   version:
     desc: Show Caddy version
-    deps: [build]
+    deps: [check:deps]
     cmds:
-      - ./{{.BINARY}} version
+      - '"{{.CADDY_CMD}}" version'

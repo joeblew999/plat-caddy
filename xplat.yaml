@@ -41,3 +41,10 @@ dependencies:
 
 # Core package marker - indicates this is required infrastructure
 core: true
+
+# Project-specific gitignore patterns
+gitignore:
+  patterns:
+    - "caddy_data/"
+    - ".caddy/"
+    - "*.log"
